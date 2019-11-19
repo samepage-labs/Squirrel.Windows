@@ -57,6 +57,34 @@ namespace Squirrel.Update
             }
         }
 
+        void validateUrl(string url)
+        {
+            if (!url.StartsWith("https://cdn.samepage.io/ndc-win/"))
+            {
+                throw new Exception("Invalid Samepage url: " + url);
+            }
+        }
+        void validateExeName(string exePath)
+        {
+            if (!exePath.EndsWith("samepage.exe"))
+            {
+                throw new Exception("Invalid Samepage name: " + exePath);
+            }
+        }
+        void validateExeSignature(string exePath)
+        {
+#if !MONO
+            try {
+                AuthenticodeTools.IsTrusted(exePath);
+            }
+            catch (Exception ex) {}
+
+            if (!isPEFileSigned(exePath)) {
+                throw new Exception("Invalid Samepage signature: " + exePath);
+            }
+#endif
+        }
+
         int executeCommandLine(string[] args)
         {
             var animatedGifWindowToken = new CancellationTokenSource();
@@ -102,6 +130,8 @@ namespace Squirrel.Update
                 bool noDelta = false;
 
                 opts = new OptionSet() {
+                    "Version: 1.9.1-sp",
+                    "",
                     "Usage: Squirrel.exe command [OPTS]",
                     "Manages Squirrel packages",
                     "",
@@ -241,6 +271,8 @@ namespace Squirrel.Update
 
         public async Task Update(string updateUrl, string appName = null)
         {
+            validateUrl(updateUrl);
+
             appName = appName ?? getAppNameFromDirectory();
 
             this.Log().Info("Starting update, downloading from " + updateUrl);
@@ -288,6 +320,8 @@ namespace Squirrel.Update
 
         public async Task<string> Download(string updateUrl, string appName = null)
         {
+            validateUrl(updateUrl);
+
             appName = appName ?? getAppNameFromDirectory();
 
             this.Log().Info("Fetching update information, downloading from " + updateUrl);
@@ -312,6 +346,8 @@ namespace Squirrel.Update
 
         public async Task<string> CheckForUpdate(string updateUrl, string appName = null)
         {
+            validateUrl(updateUrl);
+
             appName = appName ?? getAppNameFromDirectory();
 
             this.Log().Info("Fetching update information, downloading from " + updateUrl);
@@ -476,6 +512,8 @@ namespace Squirrel.Update
 
         public void Shortcut(string exeName, string shortcutArgs, string processStartArgs, string icon)
         {
+            validateExeName(exeName);
+
             if (String.IsNullOrWhiteSpace(exeName)) {
                 ShowHelp();
                 return;
@@ -492,6 +530,8 @@ namespace Squirrel.Update
 
         public void Deshortcut(string exeName, string shortcutArgs)
         {
+            validateExeName(exeName);
+
             if (String.IsNullOrWhiteSpace(exeName)) {
                 ShowHelp();
                 return;
@@ -508,6 +548,8 @@ namespace Squirrel.Update
 
         public void ProcessStart(string exeName, string arguments, bool shouldWait)
         {
+            validateExeName(exeName);
+
             if (String.IsNullOrWhiteSpace(exeName)) {
                 ShowHelp();
                 return;
@@ -535,6 +577,8 @@ namespace Squirrel.Update
             // Check for the EXE name they want
             var targetExe = new FileInfo(Path.Combine(latestAppDir, exeName.Replace("%20", " ")));
             this.Log().Info("Want to launch '{0}'", targetExe);
+
+            validateExeSignature(targetExe.ToString());
 
             // Check for path canonicalization attacks
             if (!targetExe.FullName.StartsWith(latestAppDir, StringComparison.Ordinal)) {
