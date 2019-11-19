@@ -60,8 +60,16 @@ int wmain(int argc, wchar_t* argv[])
 {
 	if (argc > 1 && wcscmp(argv[1], L"--copy-stub-resources") == 0) {
 		if (argc != 4) goto fail;
+		wprintf(L"Copying stub RC resources: src: %s, target: %s ... noop action hack\n", argv[2], argv[3]);
+		return 0;
+	}
+
+	if (argc > 1 && wcscmp(argv[1], L"--copy-rc-resources") == 0) {
+		if (argc != 4) goto fail;
+		wprintf(L"Copying RC resources: src: %s, target: %s\n", argv[2], argv[3]);
 		return CopyResourcesToStubExecutable(argv[2], argv[3]);
 	}
+
 	bool setFramework = false;
 	if (argc == 5 && wcscmp(argv[3], L"--set-required-framework") == 0) {
 		setFramework = true;
@@ -126,6 +134,11 @@ int wmain(int argc, wchar_t* argv[])
 	return 0;
 
 fail:
-	printf("Usage: WriteZipToSetup [Setup.exe template] [Zip File]\n");
+	printf("Version: 1.9.1-sp\n");
+	printf("\n");
+	printf("Usage:\n");
+	printf("> WriteZipToSetup.exe [Setup.exe template] [Zip File]\n");
+	printf("> WriteZipToSetup.exe --copy-stub-resources [source.exe] [taget.exe] ... noop action hack\n");
+	printf("> WriteZipToSetup.exe --copy-rc-resources [source.exe] [taget.exe]\n");
 	return -1;
 }
