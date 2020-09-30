@@ -32,9 +32,7 @@
     <file src="StubExecutable\bin\Release\StubExecutable.exe" target="tools" />
     <file src="Update\bin\Release\Update.exe" target="tools\Squirrel.exe" />
     <file src="Update\bin\Release\Update-Mono.exe" target="tools\Squirrel-Mono.exe" />
-    <file src="Update\bin\Release\Update.com" target="tools\Squirrel.com" />
     <file src="SyncReleases\bin\Release\SyncReleases.exe" target="tools" />
-    <file src="Update\signtool.exe" target="tools\signtool.exe" />
     <file src="Update\rcedit.exe" target="tools\rcedit.exe" />
     <file src="..\vendor\wix\*" target="tools" />
     <file src="..\vendor\7zip\*" target="tools" />

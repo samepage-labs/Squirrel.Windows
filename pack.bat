@@ -36,14 +36,8 @@ copy src\Update\bin\Release\Update.exe _build\Squirrel.exe || exit /b 1
 echo pack.bat: copying Update-Mono.exe to Squirrel-Mono.exe
 copy src\Update\bin\Release\Update-Mono.exe _build\Squirrel-Mono.exe || exit /b 1
 
-echo pack.bat: copying Update.com to Squirrel.com
-copy src\Update\bin\Release\Update.com _build\Squirrel.com || exit /b 1
-
 echo pack.bat: copying SyncReleases.exe
 copy src\SyncReleases\bin\Release\SyncReleases.exe _build\ || exit /b 1
-
-echo pack.bat: copying signtool.exe
-copy src\Update\signtool.exe _build\ || exit /b 1
 
 echo pack.bat: copying rcedit.exe
 copy src\Update\rcedit.exe _build\ || exit /b 1
