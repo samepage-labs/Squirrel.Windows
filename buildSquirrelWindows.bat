@@ -4,20 +4,26 @@
 
 echo buildSquirrelWindows.bat
 
-set VERSION=%teamcity.build.branch%
+set BUILD_NUMBER=%build.counter%
+set SQUIRREL_VERSION=%teamcity.build.branch%
 
-if "%VERSION%"=="" (
+if "%BUILD_NUMBER%"=="" (
+	set BUILD_NUMBER=devel
 	echo buildSquirrelWindows.bat: devel build
-	set VERSION=devel
 ) else (
-	echo buildSquirrelWindows.bat: TeamCity build
+	set BUILD_NUMBER=b%BUILD_NUMBER%
+	echo buildSquirrelWindows.bat: TeamCity build %BUILD_NUMBER%
 )
 
-set OUTPUT_NAME=Squirrel.Windows-%VERSION%
-set OUT=_out\%OUTPUT_NAME%
+if "%SQUIRREL_VERSION%"=="" (
+	set SQUIRREL_VERSION=1.9.1-sp
+)
 
-echo buildSquirrelWindows.bat: version: %VERSION%
-echo buildSquirrelWindows.bat: outputName: %OUTPUT_NAME%
+set OUT=_out\Squirrel.Windows-%SQUIRREL_VERSION%
+
+echo buildSquirrelWindows.bat: Squirrel.Windows version: %SQUIRREL_VERSION%
+
+::-------------------------------------------------------------------------------------------------
 
 set PATH=%CD%\vendor\7zip;%PATH%
 
@@ -87,11 +93,14 @@ copy vendor\wix\* %OUT% || exit /b 1
 echo buildSquirrelWindows.bat: copying 7zip/*
 copy vendor\7zip\* %OUT% || exit /b 1
 
+echo buildSquirrelWindows.bat: copying NuGet.exe
+copy .nuget\NuGet.exe %OUT% || exit /b 1
+
 ::-------------------------------------------------------------------------------------------------
 
 echo buildSquirrelWindows.bat: packing artifacts
 pushd %OUT%
-7z.exe a ..\%OUTPUT_NAME%.zip * -r || exit /b 1
+7z.exe a ..\Squirrel.Windows-%SQUIRREL_VERSION%-%BUILD_NUMBER%.zip * -r || exit /b 1
 popd
 
 ::-------------------------------------------------------------------------------------------------
